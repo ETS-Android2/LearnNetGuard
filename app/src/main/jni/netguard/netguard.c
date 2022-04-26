@@ -46,7 +46,15 @@ jclass clsAllowed;
 jclass clsRR;
 jclass clsUsage;
 
+
+#define DEBUG 1
+
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
     log_android(ANDROID_LOG_INFO, "JNI load");
 
     JNIEnv *env;
@@ -88,6 +96,12 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 void JNI_OnUnload(JavaVM *vm, void *reserved) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     log_android(ANDROID_LOG_INFO, "JNI unload");
 
     JNIEnv *env;
@@ -110,6 +124,12 @@ void JNI_OnUnload(JavaVM *vm, void *reserved) {
 JNIEXPORT jlong JNICALL
 Java_eu_faircode_netguard_ServiceSinkhole_jni_1init(
         JNIEnv *env, jobject instance, jint sdk) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     struct context *ctx = ng_calloc(1, sizeof(struct context), "init");
     ctx->sdk = sdk;
 
@@ -141,6 +161,12 @@ Java_eu_faircode_netguard_ServiceSinkhole_jni_1init(
 JNIEXPORT void JNICALL
 Java_eu_faircode_netguard_ServiceSinkhole_jni_1start(
         JNIEnv *env, jobject instance, jlong context, jint loglevel_) {
+
+#if DEBUG
+log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     struct context *ctx = (struct context *) context;
 
     loglevel = loglevel_;
@@ -154,7 +180,13 @@ Java_eu_faircode_netguard_ServiceSinkhole_jni_1start(
 JNIEXPORT void JNICALL
 Java_eu_faircode_netguard_ServiceSinkhole_jni_1run(
         JNIEnv *env, jobject instance, jlong context, jint tun, jboolean fwd53, jint rcode) {
-    struct context *ctx = (struct context *) context;
+
+#if DEBUG
+log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
+struct context *ctx = (struct context *) context;
 
     log_android(ANDROID_LOG_WARN, "Running tun %d fwd53 %d level %d", tun, fwd53, loglevel);
 
@@ -178,6 +210,12 @@ Java_eu_faircode_netguard_ServiceSinkhole_jni_1run(
 JNIEXPORT void JNICALL
 Java_eu_faircode_netguard_ServiceSinkhole_jni_1stop(
         JNIEnv *env, jobject instance, jlong context) {
+
+#if DEBUG
+log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     struct context *ctx = (struct context *) context;
     ctx->stopping = 1;
 
@@ -189,18 +227,35 @@ Java_eu_faircode_netguard_ServiceSinkhole_jni_1stop(
 JNIEXPORT void JNICALL
 Java_eu_faircode_netguard_ServiceSinkhole_jni_1clear(
         JNIEnv *env, jobject instance, jlong context) {
+
+#if DEBUG
+log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
     struct context *ctx = (struct context *) context;
     clear(ctx);
 }
 
 JNIEXPORT jint JNICALL
 Java_eu_faircode_netguard_ServiceSinkhole_jni_1get_1mtu(JNIEnv *env, jobject instance) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     return get_mtu();
 }
 
 JNIEXPORT jintArray JNICALL
 Java_eu_faircode_netguard_ServiceSinkhole_jni_1get_1stats(
         JNIEnv *env, jobject instance, jlong context) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     struct context *ctx = (struct context *) context;
 
     if (pthread_mutex_lock(&ctx->lock))
@@ -250,6 +305,11 @@ JNIEXPORT void JNICALL
 Java_eu_faircode_netguard_ServiceSinkhole_jni_1pcap(
         JNIEnv *env, jclass type,
         jstring name_, jint record_size, jint file_size) {
+
+#if DEBUG
+log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
 
     pcap_record_size = (size_t) record_size;
     pcap_file_size = file_size;
@@ -308,6 +368,11 @@ JNIEXPORT void JNICALL
 Java_eu_faircode_netguard_ServiceSinkhole_jni_1socks5(JNIEnv *env, jobject instance, jstring addr_,
                                                       jint port, jstring username_,
                                                       jstring password_) {
+#if DEBUG
+log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     const char *addr = (*env)->GetStringUTFChars(env, addr_, 0);
     const char *username = (*env)->GetStringUTFChars(env, username_, 0);
     const char *password = (*env)->GetStringUTFChars(env, password_, 0);
@@ -334,6 +399,12 @@ Java_eu_faircode_netguard_ServiceSinkhole_jni_1socks5(JNIEnv *env, jobject insta
 JNIEXPORT void JNICALL
 Java_eu_faircode_netguard_ServiceSinkhole_jni_1done(
         JNIEnv *env, jobject instance, jlong context) {
+
+#if DEBUG
+log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     struct context *ctx = (struct context *) context;
     log_android(ANDROID_LOG_INFO, "Done");
 
@@ -358,6 +429,12 @@ Java_eu_faircode_netguard_ServiceSinkhole_jni_1done(
 
 JNIEXPORT jstring JNICALL
 Java_eu_faircode_netguard_Util_jni_1getprop(JNIEnv *env, jclass type, jstring name_) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     const char *name = (*env)->GetStringUTFChars(env, name_, 0);
     ng_add_alloc(name, "name");
 
@@ -372,6 +449,12 @@ Java_eu_faircode_netguard_Util_jni_1getprop(JNIEnv *env, jclass type, jstring na
 
 JNIEXPORT jboolean JNICALL
 Java_eu_faircode_netguard_Util_is_1numeric_1address(JNIEnv *env, jclass type, jstring ip_) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     jboolean numeric = 0;
     const char *ip = (*env)->GetStringUTFChars(env, ip_, 0);
     ng_add_alloc(ip, "ip");
@@ -396,6 +479,12 @@ Java_eu_faircode_netguard_Util_is_1numeric_1address(JNIEnv *env, jclass type, js
 }
 
 void report_exit(const struct arguments *args, const char *fmt, ...) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     jclass cls = (*args->env)->GetObjectClass(args->env, args->instance);
     ng_add_alloc(cls, "cls");
     jmethodID mid = jniGetMethodID(args->env, cls, "nativeExit", "(Ljava/lang/String;)V");
@@ -423,6 +512,12 @@ void report_exit(const struct arguments *args, const char *fmt, ...) {
 }
 
 void report_error(const struct arguments *args, jint error, const char *fmt, ...) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     jclass cls = (*args->env)->GetObjectClass(args->env, args->instance);
     ng_add_alloc(cls, "cls");
     jmethodID mid = jniGetMethodID(args->env, cls, "nativeError", "(ILjava/lang/String;)V");
@@ -452,6 +547,12 @@ void report_error(const struct arguments *args, jint error, const char *fmt, ...
 static jmethodID midProtect = NULL;
 
 int protect_socket(const struct arguments *args, int socket) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     if (args->ctx->sdk >= 21)
         return 0;
 
@@ -488,6 +589,12 @@ int protect_socket(const struct arguments *args, int socket) {
 // http://journals.ecs.soton.ac.uk/java/tutorial/native1.1/implementing/index.html
 
 jobject jniGlobalRef(JNIEnv *env, jobject cls) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     jobject gcls = (*env)->NewGlobalRef(env, cls);
     if (gcls == NULL)
         log_android(ANDROID_LOG_ERROR, "Global ref failed (out of memory?)");
@@ -495,6 +602,12 @@ jobject jniGlobalRef(JNIEnv *env, jobject cls) {
 }
 
 jclass jniFindClass(JNIEnv *env, const char *name) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     jclass cls = (*env)->FindClass(env, name);
     if (cls == NULL)
         log_android(ANDROID_LOG_ERROR, "Class %s not found", name);
@@ -504,6 +617,12 @@ jclass jniFindClass(JNIEnv *env, const char *name) {
 }
 
 jmethodID jniGetMethodID(JNIEnv *env, jclass cls, const char *name, const char *signature) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     jmethodID method = (*env)->GetMethodID(env, cls, name, signature);
     if (method == NULL) {
         log_android(ANDROID_LOG_ERROR, "Method %s %s not found", name, signature);
@@ -513,6 +632,12 @@ jmethodID jniGetMethodID(JNIEnv *env, jclass cls, const char *name, const char *
 }
 
 jfieldID jniGetFieldID(JNIEnv *env, jclass cls, const char *name, const char *type) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     jfieldID field = (*env)->GetFieldID(env, cls, name, type);
     if (field == NULL)
         log_android(ANDROID_LOG_ERROR, "Field %s type %s not found", name, type);
@@ -520,6 +645,12 @@ jfieldID jniGetFieldID(JNIEnv *env, jclass cls, const char *name, const char *ty
 }
 
 jobject jniNewObject(JNIEnv *env, jclass cls, jmethodID constructor, const char *name) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     jobject object = (*env)->NewObject(env, cls, constructor);
     if (object == NULL)
         log_android(ANDROID_LOG_ERROR, "Create object %s failed", name);
@@ -529,6 +660,12 @@ jobject jniNewObject(JNIEnv *env, jclass cls, jmethodID constructor, const char 
 }
 
 int jniCheckException(JNIEnv *env) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     jthrowable ex = (*env)->ExceptionOccurred(env);
     if (ex) {
         (*env)->ExceptionDescribe(env);
@@ -543,6 +680,12 @@ int jniCheckException(JNIEnv *env) {
 static jmethodID midLogPacket = NULL;
 
 void log_packet(const struct arguments *args, jobject jpacket) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
 #ifdef PROFILE_JNI
     float mselapsed;
     struct timeval start, end;
@@ -588,6 +731,11 @@ void dns_resolved(const struct arguments *args,
     struct timeval start, end;
     gettimeofday(&start, NULL);
 #endif
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
 
     jclass clsService = (*args->env)->GetObjectClass(args->env, args->instance);
     ng_add_alloc(clsService, "clsService");
@@ -652,6 +800,12 @@ void dns_resolved(const struct arguments *args,
 static jmethodID midIsDomainBlocked = NULL;
 
 jboolean is_domain_blocked(const struct arguments *args, const char *name) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
 #ifdef PROFILE_JNI
     float mselapsed;
     struct timeval start, end;
@@ -694,6 +848,12 @@ jint get_uid_q(const struct arguments *args,
                jint version, jint protocol,
                const char *source, jint sport,
                const char *dest, jint dport) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
 #ifdef PROFILE_JNI
     float mselapsed;
     struct timeval start, end;
@@ -741,6 +901,12 @@ jfieldID fidRport = NULL;
 struct allowed allowed;
 
 struct allowed *is_address_allowed(const struct arguments *args, jobject jpacket) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
 #ifdef PROFILE_JNI
     float mselapsed;
     struct timeval start, end;
@@ -827,6 +993,12 @@ jobject create_packet(const struct arguments *args,
                       const char *data,
                       jint uid,
                       jboolean allowed) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     JNIEnv *env = args->env;
 
 #ifdef PROFILE_JNI
@@ -920,6 +1092,12 @@ jfieldID fidUsageReceived = NULL;
 
 void account_usage(const struct arguments *args, jint version, jint protocol,
                    const char *daddr, jint dport, jint uid, jlong sent, jlong received) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
 #ifdef PROFILE_JNI
     float mselapsed;
     struct timeval start, end;
@@ -996,6 +1174,12 @@ struct alloc_record *alloc = NULL;
 pthread_mutex_t *alock = NULL;
 
 void ng_add_alloc(void *ptr, const char *tag) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
 #ifdef PROFILE_MEMORY
     if (ptr == NULL)
         return;
@@ -1034,6 +1218,12 @@ void ng_add_alloc(void *ptr, const char *tag) {
 }
 
 void ng_delete_alloc(void *ptr, const char *file, int line) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
 #ifdef PROFILE_MEMORY
     if (ptr == NULL)
         return;
@@ -1064,18 +1254,36 @@ void ng_delete_alloc(void *ptr, const char *file, int line) {
 }
 
 void *ng_malloc(size_t __byte_count, const char *tag) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     void *ptr = malloc(__byte_count);
     ng_add_alloc(ptr, tag);
     return ptr;
 }
 
 void *ng_calloc(size_t __item_count, size_t __item_size, const char *tag) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     void *ptr = calloc(__item_count, __item_size);
     ng_add_alloc(ptr, tag);
     return ptr;
 }
 
 void *ng_realloc(void *__ptr, size_t __byte_count, const char *tag) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     ng_delete_alloc(__ptr, NULL, 0);
     void *ptr = realloc(__ptr, __byte_count);
     ng_add_alloc(ptr, tag);
@@ -1083,11 +1291,23 @@ void *ng_realloc(void *__ptr, size_t __byte_count, const char *tag) {
 }
 
 void ng_free(void *__ptr, const char *file, int line) {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     ng_delete_alloc(__ptr, file, line);
     free(__ptr);
 }
 
 void ng_dump() {
+
+#if DEBUG
+    log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
     int r = 0;
     for (int c = 0; c < allocs; c++)
         if (alloc[c].ptr != NULL)
@@ -1098,6 +1318,12 @@ void ng_dump() {
 
 JNIEXPORT void JNICALL
 Java_eu_faircode_netguard_Util_dump_1memory_1profile(JNIEnv *env, jclass type) {
+
+#if DEBUG
+log_android( ANDROID_LOG_WARN, "^^^^^:%s", __FUNCTION__ );
+#endif
+
+
 #ifdef PROFILE_MEMORY
     log_android(ANDROID_LOG_DEBUG, "Dump memory profile");
 
