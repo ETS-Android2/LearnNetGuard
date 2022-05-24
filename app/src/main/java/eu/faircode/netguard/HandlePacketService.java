@@ -18,14 +18,18 @@ import java.net.URL;
 
 public class HandlePacketService extends Service {
 
+    doBackgroundTask doTask = new doBackgroundTask();
     private Handler handlerQuery = new Handler();
+
+
     private Runnable runQueryServer = new Runnable() {
         @Override
         public void run() {
             // case 1:
             //new doBackgroundTask().execute("http://www.google.com.tw/search?q=httpclinet");
             // case 2:
-            new doBackgroundTask().execute("https://www.example.com/?search=ruby&results=10");
+            //new doBackgroundTask().execute("https://www.example.com/?search=ruby&results=10");
+            doTask.execute("https://www.example.com/?search=ruby&results=10");
             handlerQuery.postDelayed(this,1000);
         }
     };
