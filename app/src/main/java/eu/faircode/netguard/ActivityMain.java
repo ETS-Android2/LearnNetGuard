@@ -20,10 +20,12 @@ package eu.faircode.netguard;
 */
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -34,6 +36,8 @@ import android.net.VpnService;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -70,6 +74,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ActivityMain extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -109,9 +114,52 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
     public static final String EXTRA_METERED = "Metered";
     public static final String EXTRA_SIZE = "Size";
 
+//    public static Intent intentHandlePacketService;
+//    private Handler handlerQuery = new Handler();
+//    private Runnable runQueryServer = new Runnable() {
+//        @Override
+//        public void run() {
+//            String runState = "";
+//            intentHandlePacketService = new Intent(ActivityMain.this, HandlePacketService.class);
+//            startService(intentHandlePacketService);
+//            Log.d(TAG, runState);
+//            handlerQuery.postDelayed(this,10000);   //使此Runnable每1秒重Run一次
+//        }
+//    };
+
+    public HandlePacketService handlePacketService = null;
+    public static final String LOG_TAG = "ActivityMain &&";
+    private ServiceConnection mServiceConnection = new ServiceConnection()
+    {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder serviceBinder)
+        {
+            // TODO Auto-generated method stub
+            handlePacketService = ((HandlePacketService.LocalBinder)serviceBinder).getService();
+        }
+
+        public void onServiceDisconnected(ComponentName name)
+        {
+            // TODO Auto-generated method stub
+            Log.d(LOG_TAG, "onServiceDisconnected()" + name.getClassName());
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "Create version=" + Util.getSelfVersionName(this) + "/" + Util.getSelfVersionCode(this));
+
+        handlePacketService = null;
+        Intent it = new Intent(ActivityMain.this, HandlePacketService.class);
+        bindService(it, mServiceConnection, BIND_AUTO_CREATE); //bind Service
+
+        if (handlePacketService != null) {
+            Log.d(LOG_TAG, "onCreate, handlePacketService != null");
+        } else {
+            Log.d(LOG_TAG, "onCreate, handlePacketService is null");
+        }
+
+
+        Log.i(TAG, "&&& Create version=" + Util.getSelfVersionName(this) + "/" + Util.getSelfVersionCode(this));
         Util.logExtras(getIntent());
 
         // Check minimum Android version
@@ -185,10 +233,13 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
             }
         });
 
+
+
         // On/off switch
         swEnabled.setChecked(enabled);
         swEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                 Log.i(TAG, "Switch=" + isChecked);
                 prefs.edit().putBoolean("enabled", isChecked).apply();
 
@@ -258,16 +309,26 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
                                     .create();
                             dialogVpn.show();
                         }
+
                     } catch (Throwable ex) {
                         // Prepare failed
                         Log.e(TAG, ex.toString() + "\n" + Log.getStackTraceString(ex));
                         prefs.edit().putBoolean("enabled", false).apply();
                     }
-
                 } else
                     ServiceSinkhole.stop("switch off", ActivityMain.this, false);
+
+                // handle
+                //handlerQuery.post(runQueryServer);
+                if (handlePacketService != null) {
+                    Log.d(LOG_TAG, "handlePacketService myMethod");
+                    handlePacketService.myMethod();
+                } else {
+                    Log.d(LOG_TAG, "handlePacketService is null");
+                }
             }
         });
+
         if (enabled)
             checkDoze();
 
@@ -610,6 +671,7 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_ROAMING)
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 ServiceSinkhole.reload("permission granted", this, false);
@@ -726,6 +788,9 @@ public class ActivityMain extends AppCompatActivity implements SharedPreferences
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
+        Log.d(LOG_TAG, "onCreateOptionsMenu");
+
         if (Build.VERSION.SDK_INT < MIN_SDK)
             return false;
 
